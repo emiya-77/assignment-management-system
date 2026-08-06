@@ -1,0 +1,55 @@
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build results
+[Dd]ebug/
+[Ww]in32/
+[Xx]64/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+log/
+logs/
+
+## Visual Studio cache and settings
+.vs/
+Generated\ Files/
+_ReSharper*/
+*.[Cc]runch[Pp]roject
+*.nbcrunch
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Rider / IntelliJ cache
+.idea/
+*.sln.iml
+
+## Visual Studio Code settings
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/code-workspace
+
+## Secrets and Local Environments
+*.env
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+appsettings.Development.json
+appsettings.local.json
+secrets.json
+
+## OS files
+.DS_Store
+Thumbs.db
