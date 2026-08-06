@@ -15,5 +15,5 @@ public class User
     
     public ICollection<StudentCourse> StudentCourses {get; set;} = new List<StudentCourse>();
     public ICollection<TeacherAssignment> TeacherAssignments {get; set;} = new List<TeacherAssignment>();
-    public ICollection<Submission> Submissions {get; set;} = new List<Submissions>();
+    public ICollection<Submission> Submissions {get; set;} = new List<Submission>();
 }

@@ -9,6 +9,6 @@ public class Course
     public bool IsActive {get; set;} = true;
     public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
 
-    public ICollection<StudentCourse> StudentCourses {get; set;} = new List<StudentCouse>();
+    public ICollection<StudentCourse> StudentCourses {get; set;} = new List<StudentCourse>();
     public ICollection<TeacherAssignment> TeacherAssignments {get; set;} = new List<TeacherAssignment>();
 }
