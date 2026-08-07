@@ -56,6 +56,7 @@ public class UserRepository : IUserRepository
         existingUser.LastName = user.LastName;
         existingUser.Email = user.Email;
         existingUser.Role = user.Role;
+        existingUser.IsActive = user.IsActive;
 
         await _context.SaveChangesAsync();
 
