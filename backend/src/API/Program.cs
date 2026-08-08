@@ -54,6 +54,8 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 
+builder.Services.AddScoped<ITeacherAssignmentRepository, TeacherAssignmentRepository>();
+builder.Services.AddScoped<ITeacherAssignmentService, TeacherAssignmentService>();
 
 var app = builder.Build();
 
