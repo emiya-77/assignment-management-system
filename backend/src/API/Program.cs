@@ -57,6 +57,9 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ITeacherAssignmentRepository, TeacherAssignmentRepository>();
 builder.Services.AddScoped<ITeacherAssignmentService, TeacherAssignmentService>();
 
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
