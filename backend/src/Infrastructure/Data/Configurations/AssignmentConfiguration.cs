@@ -11,6 +11,13 @@ public class AssignmentConfiguration
     {
         builder.HasKey(a => a.Id);
 
+        builder.Property(a => a.Code)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.HasIndex(a => a.Code)
+            .IsUnique();
+
         builder.Property(a => a.Title)
             .IsRequired()
             .HasMaxLength(200);
