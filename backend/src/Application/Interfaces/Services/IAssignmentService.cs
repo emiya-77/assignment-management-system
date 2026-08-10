@@ -12,6 +12,15 @@ public interface IAssignmentService
 
     Task<AssignmentResponse?> GetByIdAsync(int id);
 
+    Task<List<AssignmentResponse>> GetByStudentIdAsync(
+        int studentId
+    );
+
+    Task<AssignmentResponse?> GetByIdForStudentAsync(
+        int id,
+        int studentId
+    );
+
     Task<AssignmentResponse> CreateAsync(
         int teacherId,
         CreateAssignmentRequest request

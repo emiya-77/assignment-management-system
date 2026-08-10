@@ -8,6 +8,11 @@ public interface IAssignmentRepository
     Task<Assignment?> GetByIdAsync(int id);
     Task<Assignment?> GetByIdWithDetailsAsync(int id);
     Task<List<Assignment>> GetByTeacherIdAsync(int teacherId);
+    Task<List<Assignment>> GetByStudentIdAsync(int studentId);
+    Task<Assignment?> GetByIdForStudentAsync(
+        int id,
+        int studentId
+    );
     Task<Assignment> AddAsync(Assignment assignment);
     Task<Assignment?> UpdateAsync(Assignment assignment);
     Task<bool> DeleteAsync(int id);

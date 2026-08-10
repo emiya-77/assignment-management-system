@@ -268,6 +268,33 @@ public class AssignmentService : IAssignmentService
             : MapToResponse(updatedAssignment);
     }
 
+    public async Task<List<AssignmentResponse>> GetByStudentIdAsync(
+        int studentId
+    )
+    {
+        var assignments =
+            await _assignmentRepository
+                .GetByStudentIdAsync(studentId);
+
+        return assignments
+            .Select(MapToResponse)
+            .ToList();
+    }
+
+    public async Task<AssignmentResponse?> GetByIdForStudentAsync(
+        int id,
+        int studentId
+    )
+    {
+        var assignment =
+            await _assignmentRepository
+                .GetByIdForStudentAsync(id, studentId);
+
+        return assignment is null
+            ? null
+            : MapToResponse(assignment);
+    }
+
     private static AssignmentResponse MapToResponse(
         Assignment assignment
     )

@@ -303,6 +303,12 @@ public class SubmissionService : ISubmissionService
             );
         }
 
+        if (!Enum.IsDefined(request.Status))
+        {
+            throw new InvalidOperationException(
+                "Invalid submission status."
+            );
+        }
         submission.Status = request.Status;
         submission.UpdatedAt = DateTime.UtcNow;
 

@@ -115,4 +115,45 @@ public class AssignmentRepository : IAssignmentRepository
         return await _context.Assignments
             .AnyAsync(a => a.Code == code);
     }
+
+    public async Task<List<Assignment>> GetByStudentIdAsync(
+        int studentId
+    )
+    {
+        return await _context.Assignments
+            .Include(a => a.TeacherAssignment)
+                .ThenInclude(ta => ta.Teacher)
+            .Include(a => a.TeacherAssignment)
+                .ThenInclude(ta => ta.Course)
+            .Include(a => a.TeacherAssignment)
+                .ThenInclude(ta => ta.Subject)
+            .Where(a =>
+                a.IsPublished &&
+                a.TeacherAssignment.Course.StudentCourses
+                    .Any(sc => sc.StudentId == studentId)
+            )
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<Assignment?> GetByIdForStudentAsync(
+        int id,
+        int studentId
+    )
+    {
+        return await _context.Assignments
+            .Include(a => a.TeacherAssignment)
+                .ThenInclude(ta => ta.Teacher)
+            .Include(a => a.TeacherAssignment)
+                .ThenInclude(ta => ta.Course)
+            .Include(a => a.TeacherAssignment)
+                .ThenInclude(ta => ta.Subject)
+            .Where(a =>
+                a.Id == id &&
+                a.IsPublished &&
+                a.TeacherAssignment.Course.StudentCourses
+                    .Any(sc => sc.StudentId == studentId)
+            )
+            .FirstOrDefaultAsync();
+    }
 }

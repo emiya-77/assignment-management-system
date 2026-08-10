@@ -41,6 +41,16 @@ public class AssignmentsController : ControllerBase
 
             return Ok(assignments);
         }
+        if (User.IsInRole(Roles.Student))
+        {
+            var studentId = User.GetUserId();
+
+            var assignments =
+                await _assignmentService
+                    .GetByStudentIdAsync(studentId);
+
+            return Ok(assignments);
+        }
 
         return Forbid();
     }
@@ -48,6 +58,25 @@ public class AssignmentsController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<AssignmentResponse>> GetById(int id)
     {
+        if (User.IsInRole(Roles.Student))
+        {
+            var studentId = User.GetUserId();
+
+            var studentAssignment =
+                await _assignmentService
+                    .GetByIdForStudentAsync(id, studentId);
+
+            if (studentAssignment is null)
+            {
+                return NotFound(new
+                {
+                    message = "Assignment not found."
+                });
+            }
+
+            return Ok(studentAssignment);
+        }
+        
         var assignment =
             await _assignmentService.GetByIdAsync(id);
 
