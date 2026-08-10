@@ -17,6 +17,23 @@ public class SubmissionRepository
         _context = context;
     }
 
+    public async Task<List<Submission>> GetAllAsync()
+    {
+        return await _context.Submissions
+            .Include(s => s.Student)
+            .Include(s => s.Assignment)
+                .ThenInclude(a => a.TeacherAssignment)
+                    .ThenInclude(ta => ta.Teacher)
+            .Include(s => s.Assignment)
+                .ThenInclude(a => a.TeacherAssignment)
+                    .ThenInclude(ta => ta.Course)
+            .Include(s => s.Assignment)
+                .ThenInclude(a => a.TeacherAssignment)
+                    .ThenInclude(ta => ta.Subject)
+            .OrderByDescending(s => s.SubmittedAt)
+            .ToListAsync();
+    }
+
     public async Task<Submission?> GetByIdAsync(int id)
     {
         return await _context.Submissions

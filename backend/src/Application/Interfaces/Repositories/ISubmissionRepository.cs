@@ -4,6 +4,8 @@ namespace Application.Interfaces.Repositories;
 
 public interface ISubmissionRepository
 {
+    Task<List<Submission>> GetAllAsync();
+
     Task<Submission?> GetByIdAsync(int id);
 
     Task<Submission?> GetByIdWithDetailsAsync(int id);

@@ -10,6 +10,8 @@ public class SubmissionResponse
     public string AssignmentCode { get; set; } = string.Empty;
     public string AssignmentTitle { get; set; } = string.Empty;
 
+    public int TeacherId { get; set; }
+
     public int StudentId { get; set; }
     public string StudentName { get; set; } = string.Empty;
     public string StudentEmail { get; set; } = string.Empty;

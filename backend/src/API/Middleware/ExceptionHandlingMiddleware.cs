@@ -52,6 +52,21 @@ public class ExceptionHandlingMiddleware
                 exception.Message
             );
         }
+        catch (UnauthorizedAccessException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Unauthorized access: {Message}",
+                exception.Message
+            );
+
+            await WriteProblemDetailsAsync(
+                context,
+                StatusCodes.Status403Forbidden,
+                "Forbidden",
+                exception.Message
+            );
+        }
         catch (Exception exception)
         {
             _logger.LogError(
