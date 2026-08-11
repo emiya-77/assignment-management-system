@@ -18,7 +18,7 @@ import {
   TeacherAssignment,
 } from "@/types/teacher-assignment";
 
-import { User } from "@/types/user";
+import { User, UserRole } from "@/types/user";
 import { Course } from "@/types/course";
 import { Subject } from "@/types/subject";
 
@@ -56,6 +56,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
 
 
 const initialForm = {
@@ -127,7 +128,7 @@ export default function TeacherAssignmentsPage() {
 
       setTeachers(
         usersResponse.filter(
-          (user) => user.role === "Teacher"
+          (user) => user.role === UserRole.Teacher
         )
       );
 
@@ -152,75 +153,89 @@ export default function TeacherAssignmentsPage() {
   }
 
 
-  async function handleCreate(
-    event: FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
+    async function handleCreate(
+        event: FormEvent<HTMLFormElement>
+    ) {
+        event.preventDefault();
 
-    try {
-      setError("");
-      setIsSubmitting(true);
+        try {
+            setError("");
+            setIsSubmitting(true);
 
-      const request: CreateTeacherAssignmentRequest = {
-        teacherId: Number(form.teacherId),
-        courseId: Number(form.courseId),
-        subjectId: Number(form.subjectId),
-      };
+            const request: CreateTeacherAssignmentRequest = {
+                teacherId: Number(form.teacherId),
+                courseId: Number(form.courseId),
+                subjectId: Number(form.subjectId),
+            };
 
-      await api<TeacherAssignment>(
-        "/TeacherAssignments",
-        {
-          method: "POST",
-          body: JSON.stringify(request),
+            await api<TeacherAssignment>(
+                "/TeacherAssignments",
+                {
+                    method: "POST",
+                    body: JSON.stringify(request),
+                }
+            );
+
+            toast.success(
+                "Teacher assigned successfully."
+            );
+
+            setIsCreateOpen(false);
+
+            await loadData();
+
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "Failed to create teacher assignment.";
+
+            setError(message);
+
+            toast.error(message);
+        } finally {
+            setIsSubmitting(false);
         }
-      );
-
-      setIsCreateOpen(false);
-
-      await loadData();
-
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to create teacher assignment."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-
-  async function handleDelete() {
-    if (!deletingAssignment) {
-      return;
     }
 
-    try {
-      setError("");
-      setIsSubmitting(true);
 
-      await api<void>(
-        `/TeacherAssignments/${deletingAssignment.id}`,
-        {
-          method: "DELETE",
+    async function handleDelete() {
+        if (!deletingAssignment) {
+            return;
         }
-      );
 
-      setDeletingAssignment(null);
+        try {
+            setError("");
+            setIsSubmitting(true);
 
-      await loadData();
+            await api<void>(
+                `/TeacherAssignments/${deletingAssignment.id}`,
+                {
+                    method: "DELETE",
+                }
+            );
 
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to delete teacher assignment."
-      );
-    } finally {
-      setIsSubmitting(false);
+            toast.success(
+                "Teacher assignment removed successfully."
+            );
+
+            setDeletingAssignment(null);
+
+            await loadData();
+
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "Failed to remove teacher assignment.";
+
+            setError(message);
+
+            toast.error(message);
+        } finally {
+            setIsSubmitting(false);
+        }
     }
-  }
 
 
   return (

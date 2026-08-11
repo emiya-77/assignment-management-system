@@ -49,9 +49,9 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 
 const roles: UserRole[] = [
-  "Admin",
-  "Teacher",
-  "Student",
+  UserRole.Admin,
+  UserRole.Teacher,
+  UserRole.Student,
 ];
 
 const initialForm = {
@@ -59,7 +59,7 @@ const initialForm = {
   lastName: "",
   email: "",
   password: "",
-  role: "Student" as UserRole,
+  role: UserRole.Student,
 };
 
 export default function UsersPage() {
@@ -524,11 +524,11 @@ function UserForm({
         <Label>Role</Label>
 
         <Select
-          value={form.role}
+          value={form.role.toString()}
           onValueChange={(value) =>
             setForm((current) => ({
               ...current,
-              role: value as UserRole,
+              role: Number(value) as UserRole,
             }))
           }
         >
@@ -540,7 +540,7 @@ function UserForm({
             {roles.map((role) => (
               <SelectItem
                 key={role}
-                value={role}
+                value={role.toString()}
               >
                 {role}
               </SelectItem>
