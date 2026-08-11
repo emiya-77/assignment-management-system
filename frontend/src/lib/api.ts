@@ -1,3 +1,5 @@
+import { getToken } from "@/lib/auth";
+
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
   "https://localhost:5001/api";
@@ -12,17 +14,21 @@ export async function api<T>(
 ): Promise<T> {
   const { token, headers, ...rest } = options;
 
+  const authToken = token ?? getToken();
+
   const response = await fetch(
     `${API_URL}${endpoint}`,
     {
       ...rest,
       headers: {
         "Content-Type": "application/json",
-        ...(token
+
+        ...(authToken
           ? {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${authToken}`,
             }
           : {}),
+
         ...headers,
       },
     }
@@ -35,7 +41,7 @@ export async function api<T>(
 
     throw new Error(
       error?.message ??
-        "Something went wrong. Please try again."
+      "Something went wrong. Please try again."
     );
   }
 
