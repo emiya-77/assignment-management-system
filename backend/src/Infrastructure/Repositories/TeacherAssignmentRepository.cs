@@ -25,6 +25,17 @@ public class TeacherAssignmentRepository
             .ToListAsync();
     }
 
+    public async Task<List<TeacherAssignment>> GetByTeacherIdAsync(int teacherId)
+    {
+        return await _context.TeacherAssignments
+            .Include(ta => ta.Teacher)
+            .Include(ta => ta.Course)
+            .Include(ta => ta.Subject)
+            .Where(ta => ta.TeacherId == teacherId)
+            .OrderBy(ta => ta.Id)
+            .ToListAsync();
+    }
+
     public async Task<TeacherAssignment?> GetByIdAsync(int id)
     {
         return await _context.TeacherAssignments

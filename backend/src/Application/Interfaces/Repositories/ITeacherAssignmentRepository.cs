@@ -6,6 +6,10 @@ public interface ITeacherAssignmentRepository
 {
     Task<List<TeacherAssignment>> GetAllAsync();
 
+    Task<List<TeacherAssignment>> GetByTeacherIdAsync(
+        int teacherId
+    );
+
     Task<TeacherAssignment?> GetByIdAsync(int id);
 
     Task<TeacherAssignment> AddAsync(

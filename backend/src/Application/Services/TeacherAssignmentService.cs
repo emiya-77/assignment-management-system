@@ -39,6 +39,17 @@ public class TeacherAssignmentService
             .ToList();
     }
 
+    public async Task<List<TeacherAssignmentResponse>> GetByTeacherIdAsync(int teacherId)
+    {
+        var teacherAssignments =
+            await _teacherAssignmentRepository
+                .GetByTeacherIdAsync(teacherId);
+
+        return teacherAssignments
+            .Select(MapToResponse)
+            .ToList();
+    }
+
     public async Task<TeacherAssignmentResponse?> GetByIdAsync(int id)
     {
         var teacherAssignment =

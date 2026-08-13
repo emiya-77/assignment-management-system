@@ -8,7 +8,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = Roles.Admin)]
+[Authorize]
 public class TeacherAssignmentsController : ControllerBase
 {
     private readonly ITeacherAssignmentService
@@ -23,6 +23,7 @@ public class TeacherAssignmentsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<
         ActionResult<List<TeacherAssignmentResponse>>
     > GetAll()
@@ -33,7 +34,23 @@ public class TeacherAssignmentsController : ControllerBase
         return Ok(teacherAssignments);
     }
 
+    [HttpGet("my-assignments")]
+    [Authorize(Roles = Roles.Teacher)]
+    public async Task<
+        ActionResult<List<TeacherAssignmentResponse>>
+    > GetMyAssignments()
+    {
+        var teacherId = User.GetUserId();
+
+        var assignments =
+            await _teacherAssignmentService
+                .GetByTeacherIdAsync(teacherId);
+
+        return Ok(assignments);
+    }
+
     [HttpGet("{id:int}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<
         ActionResult<TeacherAssignmentResponse>
     > GetById(int id)
@@ -53,6 +70,7 @@ public class TeacherAssignmentsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<
         ActionResult<TeacherAssignmentResponse>
     > Create(
@@ -72,6 +90,7 @@ public class TeacherAssignmentsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Delete(int id)
     {
         var deleted =

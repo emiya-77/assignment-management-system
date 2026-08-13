@@ -5,6 +5,7 @@ namespace Application.Interfaces.Services;
 public interface ITeacherAssignmentService
 {
     Task<List<TeacherAssignmentResponse>> GetAllAsync();
+    Task<List<TeacherAssignmentResponse>> GetByTeacherIdAsync(int teacherId);
     Task<TeacherAssignmentResponse?> GetByIdAsync(int id);
     Task<TeacherAssignmentResponse> CreateAsync(
         CreateTeacherAssignmentRequest request
