@@ -270,15 +270,15 @@ function getNavigationItems(
       href: "/dashboard/student",
       icon: <LayoutDashboard className="size-4" />,
     },
-    {
-      label: "Assignments",
-      href: "/dashboard/student/assignments",
-      icon: <ClipboardList className="size-4" />,
-    },
-    {
-      label: "My Submissions",
-      href: "/dashboard/student/submissions",
-      icon: <BookOpen className="size-4" />,
-    },
+    // {
+    //   label: "Assignments",
+    //   href: "/dashboard/student/assignments",
+    //   icon: <ClipboardList className="size-4" />,
+    // },
+    // {
+    //   label: "My Submissions",
+    //   href: "/dashboard/student/submissions",
+    //   icon: <BookOpen className="size-4" />,
+    // },
   ];
 }

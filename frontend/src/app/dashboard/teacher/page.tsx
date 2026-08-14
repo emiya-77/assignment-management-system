@@ -4,6 +4,7 @@ export default function TeacherDashboard() {
       <h1 className="text-3xl font-bold">
         Teacher Dashboard
       </h1>
+      <p className="mt-4">Coming soon...</p>
     </div>
   );
 }
