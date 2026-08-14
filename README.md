@@ -541,27 +541,27 @@ Use the API project's generated OpenAPI endpoint or development tooling to inspe
 
 Before submitting the repository, verify all of the following:
 
-- [ ] Repository is accessible.
-- [ ] Frontend source code is included.
-- [ ] Backend/API source code is included.
-- [ ] Unit tests are included.
-- [ ] EF Core migration files are included.
-- [ ] Database can be recreated from an empty PostgreSQL database without manually creating tables.
-- [ ] Seed/sample data is included.
-- [ ] Admin demo account works.
-- [ ] Teacher demo account works.
-- [ ] Student demo account works.
-- [ ] README explains setup and database configuration.
-- [ ] README explains how to run backend and frontend.
-- [ ] README explains how to run tests.
-- [ ] Role-based authorization is enforced by the backend.
-- [ ] Important business rules are implemented and tested.
-- [ ] `.env.example` files are included where required.
-- [ ] No real passwords, API keys, database passwords, or other secrets are committed.
-- [ ] `node_modules`, `.next`, `bin`, and `obj` are excluded through `.gitignore`.
-- [ ] Production frontend build succeeds.
-- [ ] Backend build succeeds.
-- [ ] `dotnet test` succeeds.
+- [x] Repository is accessible.
+- [x] Frontend source code is included.
+- [x] Backend/API source code is included.
+- [x] Unit tests are included.
+- [x] EF Core migration files are included.
+- [x] Database can be recreated from an empty PostgreSQL database without manually creating tables.
+- [x] Seed/sample data is included.
+- [x] Admin demo account works.
+- [x] Teacher demo account works.
+- [x] Student demo account works.
+- [x] README explains setup and database configuration.
+- [x] README explains how to run backend and frontend.
+- [x] README explains how to run tests.
+- [x] Role-based authorization is enforced by the backend.
+- [x] Important business rules are implemented and tested.
+- [x] `.env.example` files are included where required.
+- [x] No real passwords, API keys, database passwords, or other secrets are committed.
+- [x] `node_modules`, `.next`, `bin`, and `obj` are excluded through `.gitignore`.
+- [x] Production frontend build succeeds.
+- [x] Backend build succeeds.
+- [x] `dotnet test` succeeds.
 
 ## Project Submission
 
