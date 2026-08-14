@@ -22,6 +22,7 @@ import {
   CreateSubmissionRequest,
   Submission,
   SubmissionStatus,
+  UpdateSubmissionRequest,
 } from "@/types/submission";
 
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,9 @@ export default function StudentDashboard() {
 
   const [submissions, setSubmissions] =
     useState<Submission[]>([]);
+
+  const [isEditingSubmission, setIsEditingSubmission] =
+    useState(false);
 
   const [selectedAssignment, setSelectedAssignment] =
     useState<Assignment | null>(null);
@@ -118,13 +122,22 @@ export default function StudentDashboard() {
   }
 
 
-  function openAssignment(
-    assignment: Assignment
-  ) {
-    setSelectedAssignment(assignment);
-    setAnswer("");
-    setError("");
-  }
+function openAssignment(
+  assignment: Assignment
+) {
+  const submission =
+    getSubmission(assignment.id);
+
+  setSelectedAssignment(assignment);
+
+  setAnswer(
+    submission?.answer ?? ""
+  );
+
+  setIsEditingSubmission(false);
+
+  setError("");
+}
 
 
   async function handleSubmit(
@@ -155,6 +168,8 @@ export default function StudentDashboard() {
       setSelectedAssignment(null);
       setAnswer("");
 
+      await loadAssignments();
+
     } catch (error) {
       setError(
         error instanceof Error
@@ -165,6 +180,43 @@ export default function StudentDashboard() {
       setIsSubmitting(false);
     }
   }
+
+  async function handleUpdateSubmission(
+  event: FormEvent<HTMLFormElement>,
+  submission: Submission
+) {
+  event.preventDefault();
+
+  try {
+    setError("");
+    setIsSubmitting(true);
+
+    const request: UpdateSubmissionRequest = {
+      answer: answer.trim(),
+    };
+
+    await api<Submission>(
+      `/Submissions/${submission.id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(request),
+      }
+    );
+
+    setIsEditingSubmission(false);
+
+    await loadAssignments();
+
+  } catch (error) {
+    setError(
+      error instanceof Error
+        ? error.message
+        : "Failed to update submission."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+}
 
 
   return (
@@ -495,137 +547,32 @@ export default function StudentDashboard() {
 
               {submission ? (
 
-                <div className="space-y-5 rounded-lg border p-4">
-
-                  <div className="flex items-center justify-between gap-4">
-
-                    <h3 className="font-semibold">
-                      Your Submission
-                    </h3>
-
-                    <Badge>
-                      {getSubmissionStatusLabel(
-                        submission.status
-                      )}
-                    </Badge>
-
-                  </div>
-
-
-                  <div className="space-y-2">
-
-                    <p className="text-sm font-medium">
-                      Your Answer
-                    </p>
-
-                    <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-                      {submission.answer}
-                    </p>
-
-                  </div>
-
-
-                  <div className="grid gap-4 sm:grid-cols-2 text-sm">
-
-                    <div>
-
-                      <p className="text-muted-foreground">
-                        Submitted
-                      </p>
-
-                      <p className="font-medium">
-                        {new Date(
-                          submission.submittedAt
-                        ).toLocaleString()}
-                      </p>
-
-                    </div>
-
-
-                    {submission.updatedAt && (
-
-                      <div>
-
-                        <p className="text-muted-foreground">
-                          Last Updated
-                        </p>
-
-                        <p className="font-medium">
-                          {new Date(
-                            submission.updatedAt
-                          ).toLocaleString()}
-                        </p>
-
-                      </div>
-
-                    )}
-
-                  </div>
-
-
-                  {submission.status === SubmissionStatus.Graded && (
-
-                    <div className="space-y-4 rounded-lg border p-4">
-
-                      <div>
-
-                        <p className="text-sm text-muted-foreground">
-                          Marks
-                        </p>
-
-                        <p className="text-2xl font-bold">
-                          {submission.marks}
-                          {" / "}
-                          {selectedAssignment.maximumMarks}
-                        </p>
-
-                      </div>
-
-
-                      {submission.feedback && (
-
-                        <div>
-
-                          <p className="text-sm font-medium">
-                            Teacher Feedback
-                          </p>
-
-                          <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">
-                            {submission.feedback}
-                          </p>
-
-                        </div>
-
-                      )}
-
-                    </div>
-
-                  )}
-
-                </div>
-
-                ) : (
+                isEditingSubmission ? (
 
                   <form
-                    onSubmit={handleSubmit}
+                    onSubmit={(event) =>
+                      handleUpdateSubmission(
+                        event,
+                        submission
+                      )
+                    }
                     className="space-y-4"
                   >
 
                     <div className="space-y-2">
 
-                      <Label htmlFor="answer">
+                      <Label htmlFor="edit-answer">
                         Your Answer
                       </Label>
 
                       <Textarea
-                        id="answer"
+                        id="edit-answer"
                         value={answer}
                         onChange={(event) =>
                           setAnswer(
                             event.target.value
                           )
                         }
-                        placeholder="Write your answer here..."
                         className="min-h-40"
                         maxLength={10000}
                         required
@@ -634,25 +581,218 @@ export default function StudentDashboard() {
                     </div>
 
 
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={
-                        isSubmitting ||
-                        !answer.trim()
-                      }
-                    >
-                      <Send />
+                    <div className="flex gap-3">
 
-                      {isSubmitting
-                        ? "Submitting..."
-                        : "Submit Assignment"}
-                    </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        disabled={isSubmitting}
+                        onClick={() => {
+                          setAnswer(submission.answer);
+                          setIsEditingSubmission(false);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+
+
+                      <Button
+                        type="submit"
+                        className="flex-1"
+                        disabled={
+                          isSubmitting ||
+                          !answer.trim()
+                        }
+                      >
+                        {isSubmitting
+                          ? "Saving..."
+                          : "Save Changes"}
+                      </Button>
+
+                    </div>
 
                   </form>
 
-                )}
+                ) : (
 
+                  <div className="space-y-5 rounded-lg border p-4">
+
+                    <div className="flex items-center justify-between gap-4">
+
+                      <h3 className="font-semibold">
+                        Your Submission
+                      </h3>
+
+                      <Badge>
+                        {getSubmissionStatusLabel(
+                          submission.status
+                        )}
+                      </Badge>
+
+                    </div>
+
+
+                    <div className="space-y-2">
+
+                      <p className="text-sm font-medium">
+                        Your Answer
+                      </p>
+
+                      <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                        {submission.answer}
+                      </p>
+
+                    </div>
+
+
+                    <div className="grid gap-4 text-sm sm:grid-cols-2">
+
+                      <div>
+
+                        <p className="text-muted-foreground">
+                          Submitted
+                        </p>
+
+                        <p className="font-medium">
+                          {new Date(
+                            submission.submittedAt
+                          ).toLocaleString()}
+                        </p>
+
+                      </div>
+
+
+                      {submission.updatedAt && (
+
+                        <div>
+
+                          <p className="text-muted-foreground">
+                            Last Updated
+                          </p>
+
+                          <p className="font-medium">
+                            {new Date(
+                              submission.updatedAt
+                            ).toLocaleString()}
+                          </p>
+
+                        </div>
+
+                      )}
+
+                    </div>
+
+
+                    {submission.status ===
+                      SubmissionStatus.Graded && (
+
+                      <div className="space-y-4 rounded-lg border p-4">
+
+                        <div>
+
+                          <p className="text-sm text-muted-foreground">
+                            Marks
+                          </p>
+
+                          <p className="text-2xl font-bold">
+                            {submission.marks}
+                            {" / "}
+                            {selectedAssignment.maximumMarks}
+                          </p>
+
+                        </div>
+
+
+                        {submission.feedback && (
+
+                          <div>
+
+                            <p className="text-sm font-medium">
+                              Teacher Feedback
+                            </p>
+
+                            <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">
+                              {submission.feedback}
+                            </p>
+
+                          </div>
+
+                        )}
+
+                      </div>
+
+                    )}
+
+
+                    {selectedAssignment.allowSubmissionUpdate &&
+                      new Date(
+                        selectedAssignment.deadline
+                      ) > new Date() && (
+
+                        <Button
+                          className="w-full"
+                          variant="outline"
+                          onClick={() => {
+                            setAnswer(submission.answer);
+                            setIsEditingSubmission(true);
+                          }}
+                        >
+                          Edit Submission
+                        </Button>
+
+                      )}
+
+                  </div>
+
+                )
+
+              ) : (
+
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-4"
+                >
+
+                  <div className="space-y-2">
+
+                    <Label htmlFor="answer">
+                      Your Answer
+                    </Label>
+
+                    <Textarea
+                      id="answer"
+                      value={answer}
+                      onChange={(event) =>
+                        setAnswer(event.target.value)
+                      }
+                      placeholder="Write your answer here..."
+                      className="min-h-40"
+                      maxLength={10000}
+                      required
+                    />
+
+                  </div>
+
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={
+                      isSubmitting ||
+                      !answer.trim()
+                    }
+                  >
+                    <Send />
+
+                    {isSubmitting
+                      ? "Submitting..."
+                      : "Submit Assignment"}
+                  </Button>
+
+                </form>
+
+              )}
             </div>);
             })()
           )}
