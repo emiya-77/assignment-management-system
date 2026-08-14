@@ -337,29 +337,21 @@ Install the following before running the project locally:
 Clone the repository:
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
-cd <YOUR_PROJECT_DIRECTORY>
+git clone https://github.com/emiya-77/assignment-management-system.git
+cd .\assignment-management-system\
 ```
 
 The repository contains both the backend and frontend source code.
 
 ## Backend Setup
 
-### 1. Configure PostgreSQL
+1. Configure PostgreSQL
 
-Create an empty PostgreSQL database named:
+Make sure PostgreSQL is installed and running.
 
-```text
-AssignmentManagementDb
-```
+Update the PostgreSQL credentials in the backend configuration.
 
-The evaluator does **not** need to manually create tables, indexes, relationships, or sample data.
-
-### 2. Configure the backend connection
-
-The backend reads the database connection from the `DefaultConnection` connection string.
-
-Example:
+Example appsettings.json:
 
 ```json
 {
@@ -375,7 +367,6 @@ Example:
 }
 ```
 
-Do **not** commit a real PostgreSQL password or other private deployment secrets.
 
 ### 3. Restore and build
 
@@ -522,8 +513,6 @@ The unit test suite covers important business rules including:
 
 ## Demo Credentials
 
-The seeded demo accounts are intended to let the evaluator test the system immediately without first creating prerequisite users.
-
 ### Admin
 
 ```text
@@ -558,8 +547,6 @@ Student123!
 ```
 
 ## Recommended Evaluation Flow
-
-The seeded data allows the evaluator to test the core workflow immediately.
 
 ### Admin
 

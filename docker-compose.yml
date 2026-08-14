@@ -1,0 +1,70 @@
+services:
+
+  db:
+    image: postgres:18-alpine
+    container_name: assignment-management-db
+    environment:
+      POSTGRES_DB: AssignmentManagementDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U postgres -d AssignmentManagementDb"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: assignment-management-api
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+      ConnectionStrings__DefaultConnection: >
+        Host=db;
+        Port=5432;
+        Database=AssignmentManagementDb;
+        Username=postgres;
+        Password=postgres
+
+      Jwt__Key: THIS_IS_A_DEVELOPMENT_SECRET_KEY_CHANGE_IT_BEFORE_PRODUCTION_123456789
+      Jwt__Issuer: AssignmentManagementSystem
+      Jwt__Audience: AssignmentManagementSystem
+      Jwt__ExpiryInMinutes: 60
+
+    ports:
+      - "5251:8080"
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: assignment-management-frontend
+
+    depends_on:
+      - api
+
+    ports:
+      - "3000:3000"
+
+
+volumes:
+  postgres_data:
