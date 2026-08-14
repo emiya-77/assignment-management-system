@@ -1,116 +1,304 @@
+````markdown
 # Assignment & Submission Management System
 
 A role-based school/college Assignment & Submission Management System built for the **OnnoRokom Projukti Limited Assistant Software Engineer Recruitment Project**.
 
-The system allows administrators to manage users and academic setup, teachers to create and manage assignments, and students to view assignments, submit answers, update submissions when permitted, and view grading results.
+The system allows administrators to manage users and academic setup, teachers to create and manage assignments and review submissions, and students to view assignments, submit answers, update submissions when permitted, and view grading results.
 
-## Project Overview
+---
 
-The application is a full-stack web system with:
+# Quick Start
 
-- **Admin** management for users, courses, subjects, teacher assignments, and student enrollments.
-- **Teacher** management for assignments, publishing, submission review, grading, feedback, and submission status.
-- **Student** workflows for viewing eligible assignments, submitting answers, updating submissions when allowed, and viewing submission results.
-- JWT-based authentication and backend-enforced role-based authorization.
-- PostgreSQL persistence through Entity Framework Core.
-- Unit tests covering important business rules and authorization/workflow logic.
+The easiest way to run the project is with Docker.
 
-## Technology Stack
+## Requirements
 
-### Frontend
+You only need:
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- Lucide React
+- Git
+- Docker Desktop
 
-### Backend
+## 1. Clone the repository
 
-- ASP.NET Core Web API
-- C#
-- .NET 10
-- Entity Framework Core
-- Npgsql
-- JWT Bearer Authentication
-- OpenAPI
-- Custom exception-handling middleware
-- `ILogger`-based logging
+```bash
+git clone https://github.com/emiya-77/assignment-management-system.git
+cd assignment-management-system
+````
 
-### Database
+## 2. Start the project
 
-- PostgreSQL
-- Entity Framework Core migrations
+```bash
+docker compose up --build
+```
 
-### Testing
+Docker will automatically:
 
-- xUnit
-- Moq
+1. Start PostgreSQL.
+2. Build and start the ASP.NET Core API.
+3. Build and start the Next.js frontend.
+4. Create the PostgreSQL database.
+5. Apply EF Core migrations.
+6. Create the database schema, relationships, and indexes.
+7. Seed the database with demo/sample data.
 
-## Main Features
+No manual database creation or table setup is required.
 
-### Admin
+## 3. Open the application
 
-- Manage users.
-- Create and update users.
-- Change user active/inactive status.
-- Manage courses.
-- Manage subjects.
-- Assign teachers to course/subject combinations.
-- Enroll students into courses.
-- View assignments and submissions through the protected backend APIs.
+Frontend:
 
-### Teacher
+```text
+http://localhost:3000
+```
 
-- View only their own assignments.
-- View their assigned course/subject combinations.
-- Create assignments.
-- Update assignments.
-- Delete assignments.
-- Keep assignments as drafts.
-- Publish assignments.
-- Set title, description, deadline, maximum marks, and submission-update permission.
-- View submissions for their own assignments.
-- Grade submissions.
-- Provide feedback.
-- Change submission status.
+Backend API:
 
-### Student
+```text
+http://localhost:5251
+```
 
-- View published assignments for courses they are enrolled in.
-- View assignment details and deadlines.
-- Submit an answer.
-- Update a submission when updates are allowed and the deadline has not passed.
-- View submission status.
-- View marks and teacher feedback.
+The project is ready to test once the containers are running.
 
-## Important Business Rules
+---
 
-The following rules are enforced primarily by the backend API and application services:
+# Demo Credentials
 
-- Assignment codes are unique and normalized to uppercase.
-- Teachers can only create, update, publish, or delete assignments belonging to their own teacher/course/subject assignment.
-- Students can only see published assignments for courses in which they are enrolled.
-- Students cannot submit to draft assignments.
-- Students cannot submit after the deadline.
-- A student can submit only once for an assignment.
-- A database unique constraint also protects the one-submission-per-student-per-assignment rule.
-- Submission updates require both permission from the assignment and an unexpired deadline.
-- Students can only update their own submissions.
-- Teachers can only review, grade, or change status for submissions belonging to their own assignments.
-- Marks cannot be negative and cannot exceed the assignment maximum marks.
-- Successful grading automatically sets the submission status to `Graded` and records `GradedAt`.
-- Submission statuses are:
-  - `Submitted = 0`
-  - `UnderReview = 1`
-  - `Graded = 2`
-  - `Returned = 3`
-- Timestamps are stored and compared using UTC in backend business logic.
+The database comes with demo users and sample data.
 
-## Architecture
+## Admin
 
-The backend follows a layered / Clean Architecture-inspired structure:
+```text
+Email: admin@example.com
+Password: Admin123!
+```
+
+## Teacher
+
+```text
+Email: teacher@example.com
+Password: Teacher123!
+```
+
+Additional seeded teachers use:
+
+```text
+Password: Teacher123!
+```
+
+## Student
+
+```text
+Email: student@example.com
+Password: Student123!
+```
+
+Additional seeded students use:
+
+```text
+Password: Student123!
+```
+
+---
+
+# Recommended Evaluation Flow
+
+## Admin
+
+1. Log in as the Admin.
+2. Open Users.
+3. Review the seeded teachers and students.
+4. Review Courses and Subjects.
+5. Review Teacher Assignments.
+6. Review Student Enrollments.
+
+## Teacher
+
+1. Log in as the Teacher.
+2. Open My Assignments.
+3. Review the assigned course/subject combinations.
+4. Create a new assignment or inspect the seeded assignments.
+5. Publish a draft assignment.
+6. Review student submissions.
+7. Grade a submission.
+8. Provide marks and feedback.
+9. Change submission status when necessary.
+
+## Student
+
+1. Log in as the Student.
+2. View published assignments for enrolled courses.
+3. Open an assignment.
+4. Submit an answer.
+5. Update the submission when updates are allowed and the deadline has not passed.
+6. View submission status, marks, and feedback.
+
+---
+
+# Stopping the Project
+
+If Docker Compose is running in the current terminal, press:
+
+```text
+Ctrl + C
+```
+
+Or stop the containers with:
+
+```bash
+docker compose down
+```
+
+To check the container status:
+
+```bash
+docker compose ps
+```
+
+---
+
+# Resetting the Database
+
+The PostgreSQL data is stored in a Docker volume.
+
+To completely reset the database and restore the original seed data:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+The `-v` removes the PostgreSQL volume. The next startup creates a fresh database, applies the migrations, and seeds the demo data again.
+
+---
+
+# Project Overview
+
+This is a full-stack role-based application with three main roles:
+
+* **Admin** — manages users, courses, subjects, teacher assignments, and student enrollments.
+* **Teacher** — creates and manages assignments, publishes assignments, reviews submissions, gives marks and feedback, and manages submission status.
+* **Student** — views eligible assignments, submits answers, updates submissions when permitted, and views marks and feedback.
+
+The backend handles authentication, authorization, validation, business rules, database access, error handling, and logging.
+
+The frontend provides the user interface for the main role-based workflows.
+
+---
+
+# Technology Stack
+
+## Frontend
+
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+* Lucide React
+
+## Backend
+
+* ASP.NET Core Web API
+* C#
+* .NET 10
+* Entity Framework Core
+* Npgsql
+* JWT Bearer Authentication
+* OpenAPI
+* Custom exception-handling middleware
+* `ILogger`-based logging
+
+## Database
+
+* PostgreSQL
+* Entity Framework Core migrations
+
+## Testing
+
+* xUnit
+* Moq
+
+## Containerization
+
+* Docker
+* Docker Compose
+
+---
+
+# Main Features
+
+## Admin
+
+* View and manage users.
+* Create and update users.
+* Change user active/inactive status.
+* Manage courses.
+* Manage subjects.
+* Assign teachers to course/subject combinations.
+* Enroll students into courses.
+* Access protected assignment and submission APIs.
+
+## Teacher
+
+* View their own assignments.
+* View assigned course/subject combinations.
+* Create assignments.
+* Update assignments.
+* Delete assignments.
+* Keep assignments as drafts.
+* Publish assignments.
+* Set title, description, deadline, maximum marks, and submission update permission.
+* View submissions for their own assignments.
+* Grade submissions.
+* Provide feedback.
+* Change submission status.
+
+## Student
+
+* View published assignments for courses they are enrolled in.
+* View assignment details and deadlines.
+* Submit answers.
+* Update submissions when updates are allowed and the deadline has not passed.
+* View submission status.
+* View marks and teacher feedback.
+
+---
+
+# Important Business Rules
+
+The following rules are enforced primarily by the backend:
+
+* Assignment codes are unique and normalized to uppercase.
+* Teachers can only create, update, publish, or delete assignments belonging to their own teacher/course/subject assignment.
+* Students can only view published assignments for courses in which they are enrolled.
+* Students cannot submit to draft assignments.
+* Students cannot submit after the deadline.
+* A student can submit only once for an assignment.
+* A database unique constraint also protects the one-submission-per-student-per-assignment rule.
+* Submission updates require `AllowSubmissionUpdate = true`.
+* Submission updates also require the deadline to have not passed.
+* Students can only update their own submissions.
+* Teachers can only review, grade, or change the status of submissions belonging to their own assignments.
+* Marks cannot be negative.
+* Marks cannot exceed the assignment maximum marks.
+* Successful grading automatically changes the submission status to `Graded`.
+* Successful grading records `GradedAt`.
+* Backend timestamps use UTC.
+
+Submission statuses:
+
+```text
+Submitted = 0
+UnderReview = 1
+Graded = 2
+Returned = 3
+```
+
+---
+
+# Architecture
+
+The backend follows a layered, Clean Architecture-inspired structure:
 
 ```text
 HTTP Request
@@ -128,43 +316,66 @@ Entity Framework Core
 PostgreSQL
 ```
 
-### Backend Projects
+## Backend Structure
 
 ```text
 backend/
 ├── AssignmentManagementSystem.slnx
+│
 ├── src/
 │   ├── API/
 │   ├── Application/
 │   ├── Domain/
 │   └── Infrastructure/
+│
 └── tests/
     └── Application.Tests/
 ```
 
-### Layer Responsibilities
+## Frontend Structure
 
-**Domain**
+```text
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── dashboard/
+│   │   │   ├── admin/
+│   │   │   ├── teacher/
+│   │   │   └── student/
+│   │   └── login/
+│   │
+│   ├── components/
+│   ├── lib/
+│   └── types/
+│
+└── public/
+```
+
+## Layer Responsibilities
+
+### Domain
 
 Contains core entities and enums.
 
-**Application**
+### Application
 
 Contains DTOs, repository contracts, service contracts, and business logic.
 
-**Infrastructure**
+### Infrastructure
 
 Contains Entity Framework Core, PostgreSQL access, repositories, authentication infrastructure, password hashing, migrations, and database seeding.
 
-**API**
+### API
 
 Contains controllers, authentication/authorization configuration, middleware, OpenAPI configuration, CORS, and application startup.
 
-**Application.Tests**
+### Application.Tests
 
 Contains unit tests for important application business rules using xUnit and Moq.
 
-## Database Model
+---
+
+# Database Model
 
 The main entities are:
 
@@ -200,33 +411,37 @@ TeacherAssignment
       User (Student)
 ```
 
-### Assignment ownership
+## Assignment Ownership
 
-An assignment belongs to a `TeacherAssignment`, which connects one teacher with one course and one subject. This provides a single relationship through which ownership and academic context are enforced.
+An assignment belongs to a `TeacherAssignment`.
 
-### Submission uniqueness
+A `TeacherAssignment` connects one teacher with one course and one subject. This is also used to enforce assignment ownership.
 
-A submission belongs to one assignment and one student. A unique composite database index on:
+## Submission Uniqueness
+
+A submission belongs to one assignment and one student.
+
+A unique composite database index is used on:
 
 ```text
 AssignmentId + StudentId
 ```
 
-prevents duplicate submissions at the database level.
+This prevents duplicate submissions at the database level.
 
-## Authentication & Authorization
+---
+
+# Authentication & Authorization
 
 Authentication uses JWT Bearer tokens.
 
 The JWT contains:
 
-- User ID in `ClaimTypes.NameIdentifier`
-- Email
-- Role
+* User ID in `ClaimTypes.NameIdentifier`
+* Email
+* Role
 
-Backend authorization is enforced using role-based authorization and service-level ownership checks.
-
-The application supports these roles:
+Supported roles:
 
 ```text
 Admin
@@ -234,15 +449,25 @@ Teacher
 Student
 ```
 
-## API Overview
+Authorization is enforced by the backend using role-based authorization and service-level ownership checks.
 
-### Authentication
+For example:
+
+* Teachers cannot modify assignments owned by other teachers.
+* Students cannot modify another student's submission.
+* Teachers cannot grade submissions belonging to another teacher's assignment.
+
+---
+
+# API Overview
+
+## Authentication
 
 ```text
 POST /api/Auth/login
 ```
 
-### Users - Admin
+## Users
 
 ```text
 GET    /api/Users
@@ -252,7 +477,7 @@ PUT    /api/Users/{id}
 PATCH  /api/Users/{id}/status
 ```
 
-### Courses - Admin
+## Courses
 
 ```text
 GET    /api/Courses
@@ -262,7 +487,7 @@ PUT    /api/Courses/{id}
 DELETE /api/Courses/{id}
 ```
 
-### Subjects - Admin
+## Subjects
 
 ```text
 GET    /api/Subjects
@@ -272,7 +497,7 @@ PUT    /api/Subjects/{id}
 DELETE /api/Subjects/{id}
 ```
 
-### Teacher Assignments
+## Teacher Assignments
 
 Admin:
 
@@ -286,10 +511,10 @@ DELETE /api/TeacherAssignments/{id}
 Teacher:
 
 ```text
-GET    /api/TeacherAssignments/my-assignments
+GET /api/TeacherAssignments/my-assignments
 ```
 
-### Enrollments - Admin
+## Enrollments
 
 ```text
 GET    /api/Enrollments
@@ -298,7 +523,7 @@ POST   /api/Enrollments
 DELETE /api/Enrollments/{studentId}/{courseId}
 ```
 
-### Assignments
+## Assignments
 
 ```text
 GET    /api/Assignments
@@ -309,9 +534,9 @@ DELETE /api/Assignments/{id}
 PATCH  /api/Assignments/{id}/publish
 ```
 
-Access is role-aware. Admins can view all assignments, teachers see their own assignments, and students see published assignments for their enrolled courses.
+Access is role-aware. Admins can view all assignments, teachers can view their own assignments, and students can view published assignments for their enrolled courses.
 
-### Submissions
+## Submissions
 
 ```text
 GET    /api/Submissions
@@ -323,114 +548,104 @@ PATCH  /api/Submissions/{id}/grade
 PATCH  /api/Submissions/{id}/status
 ```
 
-## Prerequisites
+---
 
-Install the following before running the project locally:
+# Database and Seed Data
 
-- .NET 10 SDK
-- PostgreSQL
-- Node.js and npm compatible with the Next.js application
-- Git
+The project includes EF Core migration files in:
 
-## Repository Setup
-
-Clone the repository:
-
-```bash
-git clone https://github.com/emiya-77/assignment-management-system.git
-cd .\assignment-management-system\
+```text
+backend/src/Infrastructure/Data/Migrations
 ```
 
-The repository contains both the backend and frontend source code.
+Seed logic is located in:
 
-## Backend Setup
-
-1. Configure PostgreSQL
-
-Make sure PostgreSQL is installed and running.
-
-Update the PostgreSQL credentials in the backend configuration.
-
-Example appsettings.json:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=AssignmentManagementDb;Username=postgres;Password=YOUR_POSTGRES_PASSWORD"
-  },
-  "Jwt": {
-    "Key": "YOUR_DEVELOPMENT_JWT_SECRET",
-    "Issuer": "AssignmentManagementSystem",
-    "Audience": "AssignmentManagementSystem",
-    "ExpiryInMinutes": 60
-  }
-}
+```text
+backend/src/Infrastructure/Data/Seed/DbInitializer.cs
 ```
 
+When the backend starts, it applies pending migrations and initializes the sample data.
 
-### 3. Restore and build
+The seed data includes:
 
-From the backend directory:
+* 1 Admin
+* Multiple Teachers
+* Multiple Students
+* Multiple Courses
+* Multiple Subjects
+* Student enrollments
+* Teacher assignments
+* Sample assignments
+* Sample submissions
+
+This means the main workflows can be tested without manually creating all the required data first.
+
+---
+
+# Running Tests
+
+Unit tests are located in:
+
+```text
+backend/tests/Application.Tests
+```
+
+With the .NET 10 SDK installed, run:
 
 ```bash
+dotnet test
+```
+
+The tests cover important business rules and workflows including:
+
+* Assignment creation and uniqueness.
+* Teacher ownership and authorization.
+* Assignment update/delete/publish ownership.
+* Submission deadline validation.
+* Student enrollment validation.
+* Duplicate submission prevention.
+* Submission ownership.
+* Submission update restrictions.
+* Teacher grading authorization.
+* Maximum marks validation.
+* Automatic grading status updates.
+* Invalid submission status validation.
+
+---
+
+# Manual Setup
+
+Docker is the recommended setup method.
+
+The project can also be run manually if needed.
+
+## Backend
+
+Requirements:
+
+* .NET 10 SDK
+* PostgreSQL
+
+Configure the PostgreSQL connection in the backend configuration.
+
+Then:
+
+```bash
+cd backend
 dotnet restore
 dotnet build
 ```
 
-### 4. Run the backend
-
-From the API project directory:
+Run the API:
 
 ```bash
+cd src/API
 dotnet run
 ```
 
-The frontend is configured to use the local API URL:
+The backend automatically applies pending migrations and initializes the seed data.
 
-```text
-http://localhost:5251/api
-```
-
-If your local ASP.NET configuration starts the API on a different port, update the frontend environment variable accordingly.
-
-### 5. Database migration and seed behavior
-
-The application automatically performs migrations when it starts:
-
-```csharp
-await context.Database.MigrateAsync();
-```
-
-It then runs the database initializer:
-
-```csharp
-await DbInitializer.SeedAsync(context);
-```
-
-Therefore, after creating the empty PostgreSQL database and starting the backend:
-
-1. EF Core applies all pending migrations.
-2. The database schema is created/updated.
-3. Seed data is inserted if the database has not already been seeded.
-
-No manual table creation is required.
-
-### Resetting the demo database
-
-The seed initializer intentionally does not reseed a database that already contains users. To recreate the demo database from scratch, drop and recreate the PostgreSQL database, then start the backend again.
-
-Example PostgreSQL commands:
-
-```sql
-DROP DATABASE "AssignmentManagementDb";
-CREATE DATABASE "AssignmentManagementDb";
-```
-
-Then run the API again.
-
-## Frontend Setup
-
-### 1. Configure the API URL
+## Frontend
 
 Create:
 
@@ -444,255 +659,128 @@ with:
 NEXT_PUBLIC_API_URL=http://localhost:5251/api
 ```
 
-An example environment file should also be included in the repository as:
-
-```text
-frontend/.env.example
-```
-
-with the same variable name but no private secrets.
-
-### 2. Install dependencies
-
-From the frontend directory:
+Then:
 
 ```bash
+cd frontend
 npm install
-```
-
-### 3. Run the frontend
-
-```bash
 npm run dev
 ```
 
-The frontend should be available at:
+Open:
 
 ```text
 http://localhost:3000
 ```
 
-## CORS
+---
 
-The backend currently allows the local frontend origin:
+# Environment Configuration
 
-```text
-http://localhost:3000
-```
-
-If the frontend is run on another local port, update the backend CORS configuration accordingly.
-
-## Running Tests
-
-Unit tests are located in:
-
-```text
-backend/tests/Application.Tests
-```
-
-From the backend directory:
-
-```bash
-dotnet test
-```
-
-The unit test suite covers important business rules including:
-
-- Assignment creation and uniqueness.
-- Teacher ownership and authorization.
-- Assignment update/delete/publish ownership.
-- Submission deadline validation.
-- Submission enrollment validation.
-- Duplicate submission prevention.
-- Submission ownership.
-- Submission update restrictions.
-- Teacher grading authorization.
-- Maximum marks validation.
-- Automatic grading status updates.
-- Invalid submission status validation.
-
-## Demo Credentials
-
-### Admin
-
-```text
-Email: admin@example.com
-Password: Admin123!
-```
-
-### Main Teacher
-
-```text
-Email: teacher@example.com
-Password: Teacher123!
-```
-
-Additional seeded teachers use the password:
-
-```text
-Teacher123!
-```
-
-### Main Student
-
-```text
-Email: student@example.com
-Password: Student123!
-```
-
-Additional seeded students use the password:
-
-```text
-Student123!
-```
-
-## Recommended Evaluation Flow
-
-### Admin
-
-1. Log in as Admin.
-2. Open Users.
-3. Review teachers and students.
-4. Review Courses and Subjects.
-5. Review Teacher Assignments.
-6. Review Student Enrollments.
-7. Review assignments/submissions available through the protected backend APIs.
-
-### Teacher
-
-1. Log in as the main Teacher.
-2. Open My Assignments.
-3. View the teacher's assigned course/subject combinations.
-4. Create a new assignment or inspect existing assignments.
-5. Publish a draft assignment.
-6. Review existing student submission data through the backend/API workflow.
-7. Grade submissions and provide feedback.
-8. Change submission status when necessary.
-
-### Student
-
-1. Log in as the main Student.
-2. View published assignments for enrolled courses.
-3. Open an assignment.
-4. Submit an answer to an assignment that has not already been submitted.
-5. Update the submission where the assignment permits updates and the deadline has not passed.
-6. View submission status, marks, and feedback.
-
-## Assumptions & Design Decisions
-
-The assessment explicitly allows reasonable assumptions where requirements are not fully defined. The major decisions made in this implementation are:
-
-1. **One User entity for all roles.** Admin, Teacher, and Student are represented by a single `User` entity with a role enum.
-2. **TeacherAssignment is the ownership boundary for assignments.** A teacher is associated with a course and subject through `TeacherAssignment`; assignments reference this relationship rather than storing unrelated teacher/course/subject identifiers independently.
-3. **Students must be enrolled in a course before submitting.** Enrollment is checked by the backend before accepting a submission.
-4. **Only published assignments can be submitted.** Draft assignments are visible to their owning teacher but are not available for student submission.
-5. **One submission per student per assignment.** The application checks this rule and PostgreSQL also enforces it with a unique composite index.
-6. **Submission updates are controlled by the assignment.** Updates require `AllowSubmissionUpdate = true` and an unexpired deadline.
-7. **Assignments begin as drafts.** Creating an assignment always creates it with `IsPublished = false`; publishing is a separate teacher action.
-8. **Grading automatically sets the status to `Graded`.** Teachers can subsequently change the submission status when necessary.
-9. **UTC timestamps are used by backend business logic.** The frontend converts timestamps for display.
-10. **Assignment codes are unique and normalized.** Codes are trimmed and normalized to uppercase before persistence.
-11. **No file uploads.** Assignment answers are text-based in the current implementation.
-12. **No notification subsystem.** The assessment does not require email/push notifications, so user feedback is provided through API responses and frontend notifications/toasts.
-
-## Known Limitations
-
-The following are intentionally outside the core assessment scope:
-
-- No file attachments for assignment submissions.
-- No email or push notification system.
-- No pagination or advanced server-side filtering.
-- No password reset workflow.
-- No production deployment configuration is required for local evaluation.
-- The frontend currently focuses on the core role workflows required by the assessment rather than a large enterprise feature set.
-
-## Environment Configuration
-
-### Frontend `.env.example`
+The frontend supports:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5251/api
 ```
 
-### Backend configuration example
+An example environment file should be included in the repository as:
 
-Do not commit real secrets. Use placeholders such as:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=AssignmentManagementDb;Username=postgres;Password=YOUR_POSTGRES_PASSWORD"
-  },
-  "Jwt": {
-    "Key": "YOUR_DEVELOPMENT_JWT_SECRET",
-    "Issuer": "AssignmentManagementSystem",
-    "Audience": "AssignmentManagementSystem",
-    "ExpiryInMinutes": 60
-  }
-}
+```text
+frontend/.env.example
 ```
 
-## OpenAPI
+Do not commit real PostgreSQL passwords, JWT secrets, API keys, or other private deployment secrets.
 
-The backend is configured with OpenAPI support through ASP.NET Core's OpenAPI services. In Development mode, the application maps the OpenAPI endpoint through `MapOpenApi()`.
-
-Use the API project's generated OpenAPI endpoint or development tooling to inspect the available REST API contracts.
-
-## Final Submission Checklist
-
-Before submitting the repository, verify all of the following:
-
-- [ ] Repository is accessible.
-- [ ] Frontend source code is included.
-- [ ] Backend/API source code is included.
-- [ ] Unit tests are included.
-- [ ] EF Core migration files are included.
-- [ ] Database can be recreated from an empty PostgreSQL database without manually creating tables.
-- [ ] Seed/sample data is included.
-- [ ] Admin demo account works.
-- [ ] Teacher demo account works.
-- [ ] Student demo account works.
-- [ ] README explains setup and database configuration.
-- [ ] README explains how to run backend and frontend.
-- [ ] README explains how to run tests.
-- [ ] Role-based authorization is enforced by the backend.
-- [ ] Important business rules are implemented and tested.
-- [ ] `.env.example` files are included where required.
-- [ ] No real passwords, API keys, database passwords, or other secrets are committed.
-- [ ] `node_modules`, `.next`, `bin`, and `obj` are excluded through `.gitignore`.
-- [ ] Production frontend build succeeds.
-- [ ] Backend build succeeds.
-- [ ] `dotnet test` succeeds.
-
-## Project Submission
-
-After the repository is pushed and verified, submit the repository link through the assessment submission form provided by OnnoRokom Projukti Limited.
-
-Submission page:
-
-https://q-rp.com/c/4CIs
-
-Project submission deadline:
-
-**August 14, 2026 at 11:59 PM**
+For Docker, the application configuration is handled through the Docker Compose configuration.
 
 ---
 
-## Quick Start Summary
+# Assumptions & Design Decisions
 
-For an evaluator who wants the shortest setup path:
+The assessment allows reasonable assumptions where the requirements are not explicitly defined. These are the main decisions I made:
 
-```text
-1. Clone repository
-2. Install .NET 10 + PostgreSQL + Node.js/npm
-3. Create empty PostgreSQL database: AssignmentManagementDb
-4. Configure backend connection string with local PostgreSQL credentials
-5. Run backend: dotnet run
-6. Backend applies migrations and seeds demo data automatically
-7. Create frontend/.env.local with NEXT_PUBLIC_API_URL=http://localhost:5251/api
-8. Run npm install
-9. Run npm run dev
-10. Open http://localhost:3000
-11. Log in using the demo credentials above
-12. Run dotnet test from the backend directory
+1. **One User entity for all roles**
+   Admin, Teacher, and Student are represented by a single `User` entity with a role enum.
+
+2. **TeacherAssignment is the ownership boundary for assignments**
+   A teacher is connected to a course and subject through `TeacherAssignment`. Assignments reference this relationship.
+
+3. **Students must be enrolled before submitting**
+   The backend verifies course enrollment before accepting a submission.
+
+4. **Only published assignments can be submitted**
+   Draft assignments cannot be submitted by students.
+
+5. **One submission per student per assignment**
+   This is checked by the application and also enforced by a database unique constraint.
+
+6. **Submission updates are controlled by the assignment**
+   Updates require `AllowSubmissionUpdate = true` and an unexpired deadline.
+
+7. **Assignments start as drafts**
+   Creating an assignment starts with `IsPublished = false`.
+
+8. **Grading automatically sets the status to `Graded`**
+   Teachers can still change the submission status later when necessary.
+
+9. **UTC timestamps are used by the backend**
+   The frontend converts them for display.
+
+10. **Assignment codes are normalized**
+    Assignment codes are trimmed and converted to uppercase.
+
+11. **No file uploads**
+    Assignment answers are text-based in the current implementation.
+
+12. **No notification system**
+    Email/push notifications were outside the core scope of the assessment.
+
+---
+
+# Known Limitations
+
+* No file attachments for assignment submissions.
+* No email or push notification system.
+* No pagination.
+* No advanced server-side filtering.
+* No password reset workflow.
+* No production deployment configuration.
+* The frontend focuses on the core workflows required by the assessment.
+
+---
+
+# Final Submission Checklist
+
+* [x] Frontend source code included.
+* [x] Backend/API source code included.
+* [x] Unit tests included.
+* [x] EF Core migration files included.
+* [x] Database schema can be created automatically.
+* [x] No manual table creation is required.
+* [x] Seed/sample data included.
+* [x] Admin demo account included.
+* [x] Teacher demo account included.
+* [x] Student demo account included.
+* [x] Docker Compose configuration included.
+* [x] README includes setup instructions.
+* [x] README includes database setup behavior.
+* [x] README includes frontend and backend instructions.
+* [x] README includes test instructions.
+* [x] Role-based authorization is enforced by the backend.
+* [x] Important business rules are implemented and tested.
+* [x] No real secrets should be committed to the repository.
+
+---
+
+# Project Submission
+
+After pushing the final version of the project to GitHub, submit the repository link through the assessment submission form provided by OnnoRokom Projukti Limited.
+
+Submission page:
+
+[https://q-rp.com/c/4CIs](https://q-rp.com/c/4CIs)
+
+```
+
+This version puts **Docker + Quick Start + demo credentials + evaluation flow right at the top**, which is what the evaluator is most likely to need first.
 ```
